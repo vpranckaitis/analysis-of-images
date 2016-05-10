@@ -49,7 +49,7 @@ object ImageAnalysis extends App {
     image <- images
   } yield imageToFeature(image, concept)
 
-  ShowImages.showWindow(gui,"Color Planar Image Examples",true)
+  ShowImages.showWindow(gui, "Sliding windows", true)
 
   println("Input URL of the image:")
 
