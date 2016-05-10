@@ -58,6 +58,7 @@ object ImageAnalysis extends App {
   def analyseImage(url: String): Unit = {
     val image = Scalr.resize(UtilImageIO.loadImage(new URL(url)), Scalr.Method.QUALITY, 500)
     val planar = ConvertBufferedImage.convertFromMulti(image, null, true, classOf[GrayU8])
+
     val neighbours = for {
       k <- (6 to 7).toStream
       size = 1 << k
@@ -79,13 +80,19 @@ object ImageAnalysis extends App {
 
     val safePredictions = predictions groupBy { _._1 } mapValues { _.unzip._2.max } withDefaultValue 0.0
 
-    concepts foreach { c => println(s"$c: ${safePredictions(c)}") }
+    println(f"${"Concept"}%-14s  ${"Prediction"}%-10s  ${"Threshold"}%-9s")
+
+    concepts.sortBy(safePredictions)(Ordering[Double].reverse) foreach { c =>
+      val prediction = safePredictions(c)
+      val threshold = 0.75
+      println(f"$c%-14s  ${prediction}%10.3f  $threshold%9.2f  ${if (prediction > threshold) "PASS" else "FAIL" }")
+    }
   }
 
   for (_ <- 1 to Int.MaxValue) {
     val url = StdIn.readLine()
     Try(analyseImage(url)) match {
-      case Failure(ex) => println("failed to analyse image")
+      case Failure(ex) => println("failed to analyse image: " + ex.getMessage)
       case _ =>
     }
   }

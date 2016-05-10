@@ -45,7 +45,7 @@ object ImageTools {
         xs = 0 until p.width
       } yield xs map { gradientMagnitude(_, y) }
 
-      val MagnitudeThreshold = 1024 / 2
+      val MagnitudeThreshold = 1024 / 3
       val edges = magnitudes map { _ map { m => if (m > MagnitudeThreshold) 1 else 0 } }
 
       val w = (p.width - size) / 2
